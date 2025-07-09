@@ -31,6 +31,7 @@ function Chat() {
     const text = input.trim();
     if (!text) return;
     setMessages((prev) => [...prev, { sender: 'user', text }]);
+    console.log('Enviando al backend:', text);
     socketRef.current.emit('user-message', text);
     setInput('');
   };
