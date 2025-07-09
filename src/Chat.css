@@ -1,44 +1,103 @@
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-  box-sizing: border-box;
+body {
+  background: #000000;
+  margin: 0;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
 }
 
-.messages {
+.chat-container {
+  max-width: 520px;
+  margin: 40px auto 0 auto;
+  background: #16161a;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+  overflow: hidden;
+}
+
+.chat-header {
+  background: #8554e5;
+  color: #fff;
+  padding: 24px 32px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #0bc6ea33;
+  text-shadow: 0 2px 8px #0006;
+}
+
+.chat-messages {
   flex: 1;
+  padding: 28px 22px 18px 22px;
   overflow-y: auto;
-  margin-bottom: 1rem;
+  background: #16161a;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .message {
-  padding: 0.5rem 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 4px;
+  max-width: 72%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  word-break: break-word;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
 }
 
 .message.user {
   align-self: flex-end;
-  background-color: #daf1ff;
+  background: linear-gradient(92deg, #8554e5 80%, #0bc6ea 100%);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 24px;
 }
 
 .message.bot {
   align-self: flex-start;
-  background-color: #f1f0f0;
+  background: #0bc6ea33;
+  color: #0bc6ea;
+  border-left: 5px solid #0bc6ea;
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 24px;
 }
 
-.input-form {
+.chat-input-area {
   display: flex;
+  padding: 18px 20px;
+  background: #222;
+  border-top: 1.5px solid #0bc6ea22;
 }
 
-.input-form input {
+.chat-input-area input {
   flex: 1;
-  padding: 0.5rem;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #16161a;
+  color: #fff;
+  font-size: 1.1rem;
+  outline: none;
+  margin-right: 16px;
+  box-shadow: 0 1px 8px #0bc6ea11;
 }
 
-.input-form button {
-  padding: 0.5rem 1rem;
+.chat-input-area button {
+  background: linear-gradient(90deg, #8554e5 80%, #0bc6ea 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, transform 0.12s;
+  box-shadow: 0 2px 8px #8554e522;
+}
+
+.chat-input-area button:hover {
+  background: linear-gradient(90deg, #0bc6ea 80%, #8554e5 100%);
+  transform: scale(1.06);
 }

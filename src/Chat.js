@@ -5,6 +5,7 @@ import './Chat.css';
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -20,6 +21,11 @@ function Chat() {
     };
   }, []);
 
+  useEffect(() => {
+    // Scroll automático al final de los mensajes
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const sendMessage = (e) => {
     e.preventDefault();
     const text = input.trim();
@@ -31,20 +37,22 @@ function Chat() {
 
   return (
     <div className="chat-container">
-      <h2>Aselvia</h2>
-      <div className="messages">
+      <div className="chat-header">Aselvia</div>
+      <div className="chat-messages">
         {messages.map((m, idx) => (
-          <div key={idx} className={m.sender === 'user' ? 'message user' : 'message bot'}>
+          <div key={idx} className={`message ${m.sender === 'user' ? 'user' : 'bot'}`}>
             {m.text}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <form className="input-form" onSubmit={sendMessage}>
+      <form className="chat-input-area" onSubmit={sendMessage}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Escribe tu mensaje..."
+          autoFocus
         />
         <button type="submit">Enviar</button>
       </form>
