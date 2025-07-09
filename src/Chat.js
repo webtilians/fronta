@@ -10,7 +10,7 @@ function Chat() {
 
   useEffect(() => {
     const url = "https://backa-production.up.railway.app"; 
-    socketRef.current = io(url);
+    socketRef.current = io(url, { transports: ['websocket', 'polling'] });
 
     socketRef.current.on('bot-message', (text) => {
       setMessages((prev) => [...prev, { sender: 'aselvia', text }]);
