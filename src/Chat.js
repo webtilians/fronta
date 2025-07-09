@@ -11,7 +11,7 @@ function Chat() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-     const url = "https://backa-production.up.railway.app";
+     const url = "https://backa-4rgr.onrender.com";
     socketRef.current = io(url, {
     transports: ["websocket"],
     secure: true
