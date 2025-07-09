@@ -1,19 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
-import './Chat.css';
+import React, { useEffect, useRef, useState } from "react";
+import io from "socket.io-client";
+import "./Chat.css"; // Personalízalo a tu gusto
+
+// const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8000";
 
 function Chat() {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const messagesEndRef = useRef(null);
+  const [input, setInput] = useState("");
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const url = "https://backa-production.up.railway.app"; 
-    socketRef.current = io(url, { transports: ['websocket', 'polling'] });
+     const url = "https://backa-production.up.railway.app";
+    socketRef.current = io(url);
 
-    socketRef.current.on('bot-message', (text) => {
-      setMessages((prev) => [...prev, { sender: 'aselvia', text }]);
+    // Escuchar mensajes del bot
+    socketRef.current.on("bot-message", (text) => {
+      setMessages((prev) => [...prev, { sender: "bot", text }]);
     });
 
     return () => {
@@ -22,18 +25,18 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    // Scroll automático al final de los mensajes
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll automático al nuevo mensaje
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = (e) => {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    setMessages((prev) => [...prev, { sender: 'user', text }]);
-    console.log('Enviando al backend:', text);
-    socketRef.current.emit('user-message', text);
-    setInput('');
+    setMessages((prev) => [...prev, { sender: "user", text }]);
+    // Emitir mensaje al backend
+    socketRef.current.emit("user_message", text);
+    setInput("");
   };
 
   return (
@@ -41,7 +44,10 @@ function Chat() {
       <div className="chat-header">Aselvia</div>
       <div className="chat-messages">
         {messages.map((m, idx) => (
-          <div key={idx} className={`message ${m.sender === 'user' ? 'user' : 'bot'}`}>
+          <div
+            key={idx}
+            className={`message ${m.sender === "user" ? "user" : "bot"}`}
+          >
             {m.text}
           </div>
         ))}
