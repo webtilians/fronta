@@ -1,19 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import Chat from './Chat';
 
 function App() {
-  const [msg, setMsg] = useState("");
-
-  // src/App.js
-useEffect(() => {
-  fetch(process.env.REACT_APP_API_URL)
-    .then(res => res.json())
-    .then(data => setMsg(data.message));
-}, []);
-
-
   return (
-    <div>
-      <h1>{msg || "Cargando..."}</h1>
+    <div className="App">
+      <Chat />
     </div>
   );
 }

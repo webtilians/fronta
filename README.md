@@ -1,6 +1,10 @@
-# Getting Started with Create React App
+# Aselvia
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aselvia es una aplicación de chat que se conecta con un backend mediante sockets y actúa como agente virtual para la gestión de hoteles. Puedes usarla para simular reservas y atender solicitudes del manager.
+
+Este proyecto se ha creado con [Create React App](https://github.com/facebook/create-react-app).
+
+Para conectarte con el backend necesitas definir la variable de entorno `REACT_APP_SOCKET_URL` apuntando a la url del servidor de sockets.
 
 ## Available Scripts
 
