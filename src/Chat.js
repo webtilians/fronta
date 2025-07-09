@@ -12,7 +12,10 @@ function Chat() {
 
   useEffect(() => {
      const url = "https://backa-production.up.railway.app";
-    socketRef.current = io(url);
+    socketRef.current = io(url, {
+    transports: ["websocket"],
+    secure: true
+  });
 
     // Escuchar mensajes del bot
     socketRef.current.on("bot-message", (text) => {
