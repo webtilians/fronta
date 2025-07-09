@@ -9,7 +9,7 @@ function Chat() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const url = process.env.REACT_APP_SOCKET_URL;
+    const url = "https://backa-production.up.railway.app"; 
     socketRef.current = io(url);
 
     socketRef.current.on('bot-message', (text) => {
