@@ -38,7 +38,7 @@ function Chat() {
     // Emitir mensaje y todo el historial al backend
     socketRef.current.emit("user_message", {
       mensaje: text,
-      historial: [...messages, newMessage], // historial completo, incluyendo el mensaje actual
+      historial: [...messages, newMessage], 
     });
 
     setMessages((prev) => [...prev, newMessage]);
