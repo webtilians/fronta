@@ -73,7 +73,7 @@ body {
 /* --- CHAT --- */
 .chat-container {
   width: 100vw;
-  max-width: 720px;
+  max-width: 100%;
   margin: 0 auto;
   background: rgba(22,22,26, 0.98);
   border-radius: 22px;
