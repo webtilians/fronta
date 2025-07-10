@@ -1,17 +1,18 @@
-import React from 'react';
-import Chat from './Chat';
-import logo from './aselvia-logo.png';
+import React from "react";
+import "./App.css";
+import Chat from "./Chat";
+
 function App() {
   return (
-    <div className="app-root">
-      <header className="main-header">
-        <img src={logo} alt="Aselvia logo" className="logo" />
-        <h1>Asistente Hotel "El Amanecer"</h1>
-        <p className="subtitle">por AselvIA</p>
-      </header>
-      <main className="main-content">
+    <div className="app-bg">
+      <div className="header-container">
+        <img src="/aselvia-logo.png" alt="Logo Aselvia" className="aselvia-logo" />
+        <h1 className="hotel-title">Asistente Hotel "El Amanecer"</h1>
+        <span className="by-aselvia">por AselvIA</span>
+      </div>
+      <div className="chat-section">
         <Chat />
-      </main>
+      </div>
     </div>
   );
 }

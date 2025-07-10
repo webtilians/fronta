@@ -1,68 +1,57 @@
-body, html, #root {
-  height: 100%;
+.app-bg {
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 60% 10%, #1b2230 80%, #191d26 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 32px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.aselvia-logo {
+  width: 160px;
+  margin-bottom: 10px;
+}
+
+.hotel-title {
+  color: #fff;
+  font-size: 2.2rem;
   margin: 0;
-  padding: 0;
-  font-family: 'Inter', 'Roboto', Arial, sans-serif;
-  background: linear-gradient(120deg, #121826 0%, #223045 100%);
-  min-height: 100vh;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 1px 12px #111a, 0 4px 16px #8881;
 }
 
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.main-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 32px;
+.by-aselvia {
+  font-size: 1.1rem;
+  color: #bcd6fa;
   margin-bottom: 12px;
 }
 
-.logo {
-  width: 120px;
-  margin-bottom: 8px;
-}
-
-.main-header h1 {
-  font-size: 2.1rem;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 4px 0;
-  text-align: center;
-  text-shadow: 0 2px 12px #121826aa;
-}
-
-.subtitle {
-  font-size: 1rem;
-  color: #b2bbce;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.main-content {
+.chat-section {
   flex: 1;
   width: 100%;
-  max-width: 640px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  margin-bottom: 24px;
 }
 
-@media (max-width: 700px) {
-  .main-header h1 {
+@media (max-width: 800px) {
+  .header-container {
+    max-width: 100vw;
+  }
+  .hotel-title {
     font-size: 1.3rem;
   }
-  .main-content {
-    max-width: 100vw;
-    padding: 0 2vw;
-  }
-  .logo {
-    width: 80px;
+  .aselvia-logo {
+    width: 120px;
   }
 }
