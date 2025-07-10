@@ -11,9 +11,7 @@ function App() {
           <span className="top-header-subtitle">por AselvIA</span>
         </div>
       </div>
-      <div className="info-banner">
-        ¡Hola! Soy Aselvia, tu asistente virtual. Selecciona "Hotel" o "Camping" y pregunta lo que necesites. Usa el micrófono o el teclado. Activa "Modo Gerente" si eres staff.
-      </div>
+      
       <Chat />
     </>
   );
