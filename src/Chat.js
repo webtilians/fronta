@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
-import "./Chat.css"; // Personalízalo a tu gusto
-
-// const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8000";
+import "./Chat.css";
 
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -11,11 +9,11 @@ function Chat() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-     const url = "https://backa-4rgr.onrender.com";
+    const url = "https://backa-4rgr.onrender.com";
     socketRef.current = io(url, {
-    transports: ["websocket"],
-    secure: true
-  });
+      transports: ["websocket"],
+      secure: true,
+    });
 
     // Escuchar mensajes del bot
     socketRef.current.on("bot-message", (text) => {
@@ -28,7 +26,6 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    // Scroll automático al nuevo mensaje
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -36,9 +33,15 @@ function Chat() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    setMessages((prev) => [...prev, { sender: "user", text }]);
-    // Emitir mensaje al backend
-    socketRef.current.emit("user_message", text);
+    const newMessage = { sender: "user", text };
+
+    // Emitir mensaje y todo el historial al backend
+    socketRef.current.emit("user_message", {
+      mensaje: text,
+      historial: [...messages, newMessage], // historial completo, incluyendo el mensaje actual
+    });
+
+    setMessages((prev) => [...prev, newMessage]);
     setInput("");
   };
 
