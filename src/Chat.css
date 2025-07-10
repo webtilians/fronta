@@ -1,96 +1,155 @@
-/* Fondo general */
-body, #root, .App {
-  min-height: 100vh;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #181823 0%, #203047 100%);
-  box-sizing: border-box;
-}
-
-.main-bg {
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: none;
-  overflow-x: hidden;
-}
-
-/* CABECERA y LOGO */
-.aselvia-header {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 1.5rem auto;
-  padding: 2rem 0 0.5rem 0;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.aselvia-logo {
-  width: 180px;
-  max-width: 60vw;
-  margin-bottom: 1rem;
-}
-
-.aselvia-title {
-  color: #fff;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 0.4rem;
-  text-shadow: 0 2px 12px rgba(50,50,120,0.10);
-}
-
-.aselvia-subtitle {
-  color: #b8c6e3;
-  font-size: 1rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-}
-
-/* Chat container responsive */
 .chat-container {
+  display: flex;
+  flex-direction: column;
   flex: 1 1 auto;
-  width: 100%;
+  min-height: 0;
+  background: rgba(26, 28, 40, 0.96);
   max-width: 600px;
-  min-height: 600px;
+  width: 100%;
   margin: 0 auto 2rem auto;
   border-radius: 2rem;
-  background: rgba(26, 28, 40, 0.94);
-  box-shadow: 0 8px 32px rgba(10, 20, 60, 0.18);
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(10, 20, 60, 0.13);
+  overflow: hidden;
+  position: relative;
 }
 
+.chat-header {
+  display: none; /* Header lo tienes fuera en App.js */
+}
+
+.chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1.6rem 1.1rem 0.7rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: transparent;
+  scroll-behavior: smooth;
+  min-height: 0;
+}
+
+.message {
+  max-width: 82%;
+  padding: 1.06rem 1.18rem;
+  border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+  font-size: 1.08rem;
+  line-height: 1.68;
+  box-shadow: 0 2px 12px rgba(76,60,171,0.04);
+  word-break: break-word;
+  white-space: pre-line;
+  animation: fadein 0.23s;
+  transition: background 0.25s, color 0.25s;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: linear-gradient(90deg, #8f52ff 28%, #46aaff 100%);
+  color: #fff;
+  border-radius: 1.2rem 1.2rem 0.45rem 1.2rem;
+  font-weight: 500;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background: linear-gradient(90deg, #e9f2ff 0%, #ece3ff 100%);
+  color: #203047;
+  border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+  border: 1px solid #c3ccfd;
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(16px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* Chat input sticky abajo */
+.chat-input-area {
+  display: flex;
+  align-items: center;
+  padding: 1.1rem 1.4rem 1.4rem 1.4rem;
+  background: rgba(35, 40, 65, 0.97);
+  border-top: 1px solid #28324a;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  gap: 0.5rem;
+}
+
+.chat-input-area input {
+  flex: 1 1 auto;
+  padding: 0.93rem 1.12rem;
+  border-radius: 1rem;
+  border: none;
+  outline: none;
+  font-size: 1.09rem;
+  background: #232843;
+  color: #f7fafd;
+  margin-right: 1rem;
+  transition: background 0.2s;
+  box-shadow: 0 1px 6px rgba(76,60,171,0.04);
+}
+
+.chat-input-area input:focus {
+  background: #232862;
+}
+
+.chat-input-area button {
+  background: linear-gradient(90deg, #8f52ff 45%, #46aaff 100%);
+  color: #fff;
+  border: none;
+  padding: 0.87rem 1.45rem;
+  border-radius: 1rem;
+  font-size: 1.09rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(76,60,171,0.13);
+  transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+  outline: none;
+}
+
+.chat-input-area button:hover {
+  background: linear-gradient(90deg, #46aaff 30%, #8f52ff 100%);
+  box-shadow: 0 4px 14px rgba(76,60,171,0.21);
+  transform: scale(1.04);
+}
+
+/* Custom scrollbar */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+  background: #222235;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #466fff;
+  border-radius: 8px;
+}
+
+/* Responsive */
 @media (max-width: 700px) {
-  .main-bg, .chat-container, .aselvia-header {
-    max-width: 100vw;
-    border-radius: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .aselvia-header {
-    padding: 1rem 0 0.3rem 0;
-  }
-  .aselvia-logo {
-    width: 110px;
-    margin-bottom: 0.7rem;
-  }
-  .aselvia-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.15rem;
-  }
-  .aselvia-subtitle {
-    font-size: 0.9rem;
-  }
   .chat-container {
-    min-height: 70vh;
-    margin-bottom: 1.2rem;
+    max-width: 100vw;
+    min-height: 60vh;
+    border-radius: 0;
+    margin: 0 auto 1.3rem auto;
+  }
+  .chat-messages {
+    padding: 1rem 0.35rem 0.4rem 0.35rem;
+    gap: 0.7rem;
+  }
+  .chat-input-area {
+    padding: 0.7rem 0.5rem 0.9rem 0.5rem;
+  }
+  .message {
+    font-size: 0.97rem;
+    padding: 0.82rem 0.95rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .chat-input-area input, .chat-input-area button {
+    font-size: 0.93rem;
+    padding: 0.6rem 0.8rem;
   }
 }
