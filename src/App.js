@@ -3,14 +3,16 @@ import Chat from './Chat';
 import logo from './aselvia-logo.png';
 function App() {
   return (
-    <div className="main-bg">
-  <header className="aselvia-header">
-    <img src={logo} className="aselvia-logo" alt="Aselvia logo" />
-    <div className="aselvia-title">Asistente Hotel "El Amanecer"</div>
-    <div className="aselvia-subtitle">por AselvIA</div>
-  </header>
-  <Chat />
-</div>
+    <div className="app-root">
+      <header className="main-header">
+        <img src={aselviaLogo} alt="Aselvia logo" className="logo" />
+        <h1>Asistente Hotel "El Amanecer"</h1>
+        <p className="subtitle">por AselvIA</p>
+      </header>
+      <main className="main-content">
+        <Chat />
+      </main>
+    </div>
   );
 }
 
