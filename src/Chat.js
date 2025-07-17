@@ -10,7 +10,8 @@ function Chat() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const url = "https://backa-4rgr.onrender.com"; // O el tuyo
+    const url = process.env.REACT_APP_SOCKET_URL || "http://localhost:8000";
+ // O el tuyo
     socketRef.current = io(url, {
       transports: ["websocket"],
       secure: true
