@@ -1,110 +1,175 @@
-import React, { useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
-import "./Chat.css";
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import useSocket from './hooks/useSocket';
+import useMessages from './hooks/useMessages';
+import MessageItem from './components/MessageItem';
+import ConnectionStatus from './components/ConnectionStatus';
+import TypingIndicator from './components/TypingIndicator';
+import ChatInput from './components/ChatInput';
+import { SOCKET_EVENTS, MESSAGE_TYPES, getToolLabel } from './utils/constants';
+import './Chat.css';
 
 function Chat() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
   const [toolInUse, setToolInUse] = useState(null);
-  const socketRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showTimestamps, setShowTimestamps] = useState(false);
   const messagesEndRef = useRef(null);
+  const { isConnected, connectionError, emit, on, off } = useSocket();
+  const { messages, addMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
 
-  useEffect(() => {
-    const url = process.env.REACT_APP_SOCKET_URL || "http://localhost:8000";
- // O el tuyo
-    socketRef.current = io(url, {
-      transports: ["websocket"],
-      secure: true
+  // Scroll automático al nuevo mensaje
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end'
     });
-
-    // Mensaje del bot normal
-    socketRef.current.on("bot-message", (text) => {
-      setMessages((prev) => [...prev, { sender: "bot", text }]);
-    });
-
-    // Evento para mostrar tool en uso
-    socketRef.current.on("tool-used", (data) => {
-      // data: {tool: "consultar_disponibilidad", input: {...}} o {tool: null}
-      if (data.tool) {
-        setToolInUse(data.tool);
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: "tool",
-            text: `🛠️ Usando la herramienta: ${toolLabel(data.tool)}...`
-          }
-        ]);
-      } else {
-        // Borra el aviso del tool anterior
-        setToolInUse(null);
-        setMessages((prev) => prev.filter((msg) => msg.sender !== "tool"));
-      }
-    });
-
-    return () => {
-      socketRef.current.disconnect();
-    };
   }, []);
 
   useEffect(() => {
-    // Scroll automático al nuevo mensaje
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
-  // Opcional: "bonito" para nombres de herramientas
-  const toolLabel = (tool) => {
-    switch (tool) {
-      case "consultar_disponibilidad":
-        return "Consultar disponibilidad";
-      case "crear_reserva":
-        return "Crear reserva";
-      case "listar_tipos_habitaciones":
-        return "Listar tipos de habitaciones";
-      case "listar_reservas":
-        return "Listar reservas";
-      default:
-        return tool;
+  // Manejo de eventos del socket
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Mensaje del bot normal
+    const handleBotMessage = (text) => {
+      setIsTyping(false);
+      addMessage({ 
+        sender: MESSAGE_TYPES.BOT, 
+        text: typeof text === 'string' ? text : text.message || 'Mensaje sin contenido'
+      });
+    };
+
+    // Indicador de escritura
+    const handleBotTyping = (data) => {
+      setIsTyping(data?.typing ?? false);
+    };
+
+    // Evento para mostrar tool en uso
+    const handleToolUsed = (data) => {
+      if (data?.tool) {
+        setToolInUse(data.tool);
+        addMessage({
+          sender: MESSAGE_TYPES.TOOL,
+          text: `🛠️ Usando la herramienta: ${getToolLabel(data.tool)}...`
+        });
+      } else {
+        // Borra el aviso del tool anterior
+        setToolInUse(null);
+        removeToolMessages();
+      }
+    };
+
+    // Registrar event listeners
+    on(SOCKET_EVENTS.BOT_MESSAGE, handleBotMessage);
+    on(SOCKET_EVENTS.BOT_TYPING, handleBotTyping);
+    on(SOCKET_EVENTS.TOOL_USED, handleToolUsed);
+
+    // Cleanup
+    return () => {
+      off(SOCKET_EVENTS.BOT_MESSAGE, handleBotMessage);
+      off(SOCKET_EVENTS.BOT_TYPING, handleBotTyping);
+      off(SOCKET_EVENTS.TOOL_USED, handleToolUsed);
+    };
+  }, [isConnected, on, off, addMessage, removeToolMessages]);
+
+  // Enviar mensaje
+  const handleSendMessage = useCallback((text) => {
+    if (!isConnected || !text.trim()) return;
+
+    try {
+      const historial = getHistorial();
+      
+      addMessage({ 
+        sender: MESSAGE_TYPES.USER, 
+        text: text.trim() 
+      });
+
+      emit(SOCKET_EVENTS.USER_MESSAGE, { 
+        mensaje: text.trim(), 
+        historial 
+      });
+
+      setIsTyping(true);
+    } catch (error) {
+      console.error('Error al enviar mensaje:', error);
+      addMessage({
+        sender: MESSAGE_TYPES.ERROR,
+        text: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+      });
     }
-  };
+  }, [isConnected, emit, addMessage, getHistorial]);
 
-  // Al enviar mensaje
-  const sendMessage = (e) => {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text) return;
-    const historial = messages.map((m) => ({
-      sender: m.sender,
-      text: m.text
-    })).filter(m => m.sender === "user" || m.sender === "bot");
-    setMessages((prev) => [...prev, { sender: "user", text }]);
-    // Emitir mensaje y historial (solo user/bot)
-    socketRef.current.emit("user_message", { mensaje: text, historial });
-    setInput("");
-  };
+  // Limpiar chat
+  const handleClearChat = useCallback(() => {
+    if (window.confirm('¿Estás seguro de que deseas limpiar el chat?')) {
+      clearMessages();
+      setToolInUse(null);
+      setIsTyping(false);
+    }
+  }, [clearMessages]);
 
   return (
-    <div className="chat-container">
-      <div className="chat-messages">
-        {messages.map((m, idx) => (
-          <div
-            key={idx}
-            className={`message ${m.sender === "user" ? "user" : m.sender === "tool" ? "bot tool-used" : "bot"}`}
+    <div className="chat-container" role="main" aria-label="Chat del asistente hotel">
+      <div className="chat-header">
+        <ConnectionStatus 
+          isConnected={isConnected} 
+          connectionError={connectionError} 
+        />
+        <div className="chat-controls">
+          <button
+            className="toggle-timestamps"
+            onClick={() => setShowTimestamps(!showTimestamps)}
+            aria-label="Mostrar/ocultar marcas de tiempo"
+            title={showTimestamps ? 'Ocultar horas' : 'Mostrar horas'}
           >
-            {m.text}
+            🕒
+          </button>
+          <button
+            className="clear-chat"
+            onClick={handleClearChat}
+            aria-label="Limpiar chat"
+            title="Limpiar conversación"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+
+      <div 
+        className="chat-messages" 
+        role="log" 
+        aria-live="polite" 
+        aria-label="Mensajes del chat"
+      >
+        {messages.length === 0 && (
+          <div className="welcome-message" role="article">
+            <div className="welcome-icon">👋</div>
+            <div className="welcome-text">
+              ¡Hola! Soy AselvIA, tu asistente del Hotel "El Amanecer". 
+              ¿En qué puedo ayudarte hoy?
+            </div>
           </div>
+        )}
+        
+        {messages.map((message) => (
+          <MessageItem
+            key={message.id || message.timestamp}
+            message={message}
+            showTimestamp={showTimestamps}
+          />
         ))}
+        
+        <TypingIndicator isVisible={isTyping} />
         <div ref={messagesEndRef} />
       </div>
-      <form className="chat-input-area" onSubmit={sendMessage}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Escribe tu mensaje..."
-          autoFocus
-        />
-        <button type="submit">Enviar</button>
-      </form>
+
+      <ChatInput
+        onSendMessage={handleSendMessage}
+        disabled={!isConnected}
+        placeholder={isConnected ? "Escribe tu mensaje..." : "Conectando..."}
+      />
     </div>
   );
 }
