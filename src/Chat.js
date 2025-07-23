@@ -9,7 +9,6 @@ import { SOCKET_EVENTS, MESSAGE_TYPES, getToolLabel } from './utils/constants';
 import './Chat.css';
 
 function Chat() {
-  const [toolInUse, setToolInUse] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [showTimestamps, setShowTimestamps] = useState(false);
   const messagesEndRef = useRef(null);
@@ -49,8 +48,6 @@ function Chat() {
     // Evento para mostrar tool en uso - Mejorado para el nuevo backend
     const handleToolUsed = (data) => {
       if (data?.tool) {
-        setToolInUse(data.tool);
-        
         // Crear mensaje más informativo sobre la herramienta
         let toolMessage = `🛠️ Usando: ${getToolLabel(data.tool)}`;
         
@@ -78,7 +75,6 @@ function Chat() {
         });
       } else {
         // Borra el aviso del tool anterior
-        setToolInUse(null);
         removeToolMessages();
       }
     };
@@ -127,7 +123,6 @@ function Chat() {
   const handleClearChat = useCallback(() => {
     if (window.confirm('¿Estás seguro de que deseas limpiar el chat?')) {
       clearMessages();
-      setToolInUse(null);
       setIsTyping(false);
     }
   }, [clearMessages]);

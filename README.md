@@ -1,10 +1,92 @@
-# Aselvia
+# Hotel AselvIA - Frontend React
 
-Aselvia es una aplicación de chat que se conecta con un backend mediante sockets y actúa como agente virtual para la gestión de hoteles. Puedes usarla para simular reservas y atender solicitudes del manager.
+## 🏨 Descripción
 
-Este proyecto se ha creado con [Create React App](https://github.com/facebook/create-react-app).
+Aplicación frontend de chat en React para el sistema de reservas del Hotel AselvIA. Proporciona una interfaz moderna y responsive para interactuar con el asistente de IA del hotel, mostrando en tiempo real las herramientas que está utilizando el backend.
 
-Para conectarte con el backend necesitas definir la variable de entorno `REACT_APP_SOCKET_URL` apuntando a la url del servidor de sockets.
+## ✨ Características Principales
+
+### 🎨 Diseño Responsive
+- **Pantalla completa**: El chat se adapta al 100% de la pantalla disponible
+- **Multi-dispositivo**: Optimizado para desktop, tablet y móvil
+- **Diseño moderno**: Interfaz elegante con gradientes y animaciones suaves
+
+### 🛠️ Visualización de Herramientas
+- **Tiempo real**: Muestra las herramientas que está usando el backend LangChain
+- **Información detallada**: Parámetros y contexto de cada herramienta
+- **Animaciones**: Indicadores visuales mientras las herramientas están activas
+
+### 🔌 Conectividad Avanzada
+- **Socket.IO**: Comunicación en tiempo real con el backend
+- **Reconexión automática**: Manejo inteligente de desconexiones
+- **Estado de conexión**: Indicador visual del estado de la conexión
+
+### 💬 Chat Inteligente
+- **Historial persistente**: Los mensajes se guardan en localStorage
+- **Indicador de escritura**: Muestra cuando el asistente está respondiendo
+- **Formateo de mensajes**: Soporte para texto enriquecido y emojis
+- **Límite de caracteres**: Control de longitud de mensajes
+
+### ♿ Accesibilidad
+- **ARIA Labels**: Soporte completo para lectores de pantalla
+- **Roles semánticos**: Estructura HTML accesible
+- **Navegación por teclado**: Soporte completo para teclado
+
+## 🚀 Instalación y Configuración
+
+### Prerrequisitos
+- Node.js 16+ 
+- npm o yarn
+
+### 1. Instalar dependencias
+```bash
+npm install
+```
+
+### 2. Configurar variables de entorno
+Crear archivo `.env` en la raíz del proyecto:
+
+```properties
+# Para desarrollo local
+REACT_APP_API_URL=http://localhost:8000/
+REACT_APP_SOCKET_URL=http://localhost:8000
+
+# Para producción
+# REACT_APP_API_URL=https://tu-backend-production.com/
+# REACT_APP_SOCKET_URL=https://tu-backend-production.com
+```
+
+### 3. Iniciar el servidor de desarrollo
+```bash
+npm start
+```
+
+La aplicación estará disponible en `http://localhost:3000`
+
+## 🛠️ Herramientas Soportadas
+
+El frontend puede mostrar el uso de las siguientes herramientas del backend:
+
+- **consultar_disponibilidad**: Verificar habitaciones disponibles
+- **crear_reserva**: Crear nuevas reservas
+- **listar_tipos_habitaciones**: Obtener catálogo de habitaciones
+- **listar_reservas**: Mostrar reservas existentes
+- **analyze_intent**: Análisis de intención del usuario
+- Y más herramientas personalizadas
+
+## 📱 Responsive Design
+
+### Desktop (1025px+)
+- Chat ocupa 90% del viewport con máximo 1200px
+- Mensajes hasta 65% de ancho
+
+### Tablet (769px - 1024px)  
+- Chat ocupa 95% del viewport con máximo 900px
+- Mensajes hasta 70% de ancho
+
+### Móvil (768px-)
+- Chat ocupa 100% de la pantalla
+- Optimizado para touch
 
 ## Available Scripts
 
