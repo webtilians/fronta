@@ -7,6 +7,14 @@ export const TOOL_LABELS = {
   modificar_reserva: 'Modificar reserva',
   consultar_servicios: 'Consultar servicios del hotel',
   generar_factura: 'Generar factura',
+  // Añadir herramientas específicas del backend
+  listar_tipos: 'Obtener catálogo de habitaciones',
+  analyze_intent: 'Analizando intención del usuario',
+  handle_specific_availability: 'Verificando disponibilidad específica',
+  handle_general_availability: 'Consultando disponibilidad general',
+  handle_reservation_request: 'Procesando solicitud de reserva',
+  handle_room_types_query: 'Consultando tipos de habitaciones',
+  handle_list_reservations: 'Listando reservas existentes',
 };
 
 export const getToolLabel = (tool) => {

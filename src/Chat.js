@@ -46,13 +46,35 @@ function Chat() {
       setIsTyping(data?.typing ?? false);
     };
 
-    // Evento para mostrar tool en uso
+    // Evento para mostrar tool en uso - Mejorado para el nuevo backend
     const handleToolUsed = (data) => {
       if (data?.tool) {
         setToolInUse(data.tool);
+        
+        // Crear mensaje más informativo sobre la herramienta
+        let toolMessage = `🛠️ Usando: ${getToolLabel(data.tool)}`;
+        
+        // Agregar información adicional si está disponible
+        if (data.input) {
+          const inputInfo = typeof data.input === 'object' ? 
+            Object.entries(data.input)
+              .filter(([key, value]) => value && value !== '')
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(', ') : 
+            data.input;
+          
+          if (inputInfo) {
+            toolMessage += `\nProcesando: ${inputInfo}`;
+          }
+        }
+        
         addMessage({
           sender: MESSAGE_TYPES.TOOL,
-          text: `🛠️ Usando la herramienta: ${getToolLabel(data.tool)}...`
+          text: toolMessage,
+          toolInfo: {
+            tool: data.tool,
+            input: data.input
+          }
         });
       } else {
         // Borra el aviso del tool anterior
