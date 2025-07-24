@@ -2,27 +2,26 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 
-// Mock socket.io-client
-jest.mock('socket.io-client', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    on: jest.fn(),
-    off: jest.fn(),
-    emit: jest.fn(),
-    disconnect: jest.fn(),
-  })),
-}));
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ status: 'healthy' }),
+  })
+);
 
 describe('App Component', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+    // Clear fetch mock
+    fetch.mockClear();
   });
 
   test('renders hotel title and logo', () => {
     render(<App />);
     
-    const title = screen.getByText(/Asistente Hotel "El Amanecer"/i);
+    const title = screen.getByText(/Asistente Hotel/i);
     const subtitle = screen.getByText(/por AselvIA/i);
     const logo = screen.getByAltText(/Logo Aselvia/i);
     
@@ -107,5 +106,20 @@ describe('App Component', () => {
     await user.type(input, 'Test message');
     
     expect(sendButton).not.toBeDisabled();
+  });
+
+  test('calls health endpoint on connection check', async () => {
+    render(<App />);
+    
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        'http://localhost:8000/health',
+        expect.objectContaining({
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      );
+    });
   });
 });

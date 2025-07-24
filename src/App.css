@@ -42,10 +42,27 @@
   flex: 1;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 0 20px 20px 20px;
   box-sizing: border-box;
+  min-height: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.chat-input-container {
+  position: sticky;
+  bottom: 0;
+  background: #191d26;
+  z-index: 2;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 @media (max-width: 768px) {
@@ -68,6 +85,10 @@
   .chat-section {
     padding: 0;
   }
+  .chat-input-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -81,5 +102,12 @@
   
   .aselvia-logo {
     width: 120px;
+  }
+  .chat-section {
+    padding: 0 8px 8px 8px;
+  }
+  .chat-input-container {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }

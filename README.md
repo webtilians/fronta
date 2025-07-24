@@ -2,7 +2,7 @@
 
 ## 🏨 Descripción
 
-Aplicación frontend de chat en React para el sistema de reservas del Hotel AselvIA. Proporciona una interfaz moderna y responsive para interactuar con el asistente de IA del hotel, mostrando en tiempo real las herramientas que está utilizando el backend.
+Aplicación frontend de chat en React para el sistema de reservas del Hotel AselvIA. Proporciona una interfaz moderna y responsive para interactuar con el asistente de IA del hotel, ahora usando **REST API** para comunicación con el backend.
 
 ## ✨ Características Principales
 
@@ -11,19 +11,20 @@ Aplicación frontend de chat en React para el sistema de reservas del Hotel Asel
 - **Multi-dispositivo**: Optimizado para desktop, tablet y móvil
 - **Diseño moderno**: Interfaz elegante con gradientes y animaciones suaves
 
-### 🛠️ Visualización de Herramientas
-- **Tiempo real**: Muestra las herramientas que está usando el backend LangChain
-- **Información detallada**: Parámetros y contexto de cada herramienta
-- **Animaciones**: Indicadores visuales mientras las herramientas están activas
+### � REST API Integration
+- **HTTP Requests**: Comunicación mediante fetch API y endpoints REST
+- **Manejo de sesiones**: Sistema de sesiones con localStorage
+- **Timeouts y errores**: Manejo robusto de errores y timeouts
+- **Health checks**: Verificación automática del estado del servidor
 
-### 🔌 Conectividad Avanzada
-- **Socket.IO**: Comunicación en tiempo real con el backend
-- **Reconexión automática**: Manejo inteligente de desconexiones
-- **Estado de conexión**: Indicador visual del estado de la conexión
+### �️ Panel de Pruebas
+- **Testing integrado**: Panel para probar todos los endpoints disponibles
+- **Resultados en tiempo real**: Visualización de respuestas y errores
+- **Métricas de rendimiento**: Tiempo de respuesta de cada endpoint
 
 ### 💬 Chat Inteligente
 - **Historial persistente**: Los mensajes se guardan en localStorage
-- **Indicador de escritura**: Muestra cuando el asistente está respondiendo
+- **Simulación de herramientas**: Muestra qué herramientas está usando el backend
 - **Formateo de mensajes**: Soporte para texto enriquecido y emojis
 - **Límite de caracteres**: Control de longitud de mensajes
 
@@ -48,12 +49,10 @@ Crear archivo `.env` en la raíz del proyecto:
 
 ```properties
 # Para desarrollo local
-REACT_APP_API_URL=http://localhost:8000/
-REACT_APP_SOCKET_URL=http://localhost:8000
+REACT_APP_API_URL=http://localhost:8000
 
 # Para producción
-# REACT_APP_API_URL=https://tu-backend-production.com/
-# REACT_APP_SOCKET_URL=https://tu-backend-production.com
+# REACT_APP_API_URL=https://tu-backend-production.com
 ```
 
 ### 3. Iniciar el servidor de desarrollo
@@ -63,16 +62,52 @@ npm start
 
 La aplicación estará disponible en `http://localhost:3000`
 
-## 🛠️ Herramientas Soportadas
+## 🎯 Endpoints Disponibles
 
-El frontend puede mostrar el uso de las siguientes herramientas del backend:
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/chat` | POST | Chat principal con el asistente |
+| `/habitaciones` | GET | Listar tipos de habitaciones |
+| `/reservas` | GET | Listar todas las reservas |
+| `/health` | GET | Estado del servidor |
+| `/test` | GET | Página de prueba |
 
-- **consultar_disponibilidad**: Verificar habitaciones disponibles
-- **crear_reserva**: Crear nuevas reservas
-- **listar_tipos_habitaciones**: Obtener catálogo de habitaciones
-- **listar_reservas**: Mostrar reservas existentes
-- **analyze_intent**: Análisis de intención del usuario
-- Y más herramientas personalizadas
+### Ejemplo de uso del endpoint `/chat`:
+
+```javascript
+const response = await fetch('http://localhost:8000/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    mensaje: "¿Hay disponibilidad para una habitación doble?",
+    historial: [],
+    session_id: "session_123456"
+  })
+});
+```
+
+## 🛠️ Herramientas Simuladas
+
+El frontend simula el uso de herramientas basado en el contenido del mensaje:
+
+- **consultar_disponibilidad**: Cuando se menciona "disponibilidad" o "disponible"
+- **crear_reserva**: Cuando se menciona "reserva" o "reservar"  
+- **listar_tipos_habitaciones**: Cuando se menciona "habitaciones" o "tipos"
+- **listar_reservas**: Cuando se menciona "listar reservas" o "ver reservas"
+- **analyze_intent**: Para cualquier otra consulta
+
+## 🧪 Panel de Pruebas
+
+Accede al panel de pruebas haciendo clic en el botón 🧪 en el chat. Permite:
+
+- ✅ Probar conexión al servidor (`/health`)
+- ✅ Listar habitaciones (`/habitaciones`)
+- ✅ Listar reservas (`/reservas`)
+- ✅ Enviar mensaje de prueba (`/chat`)
+- ⏱️ Ver tiempos de respuesta
+- 📊 Visualizar respuestas JSON
 
 ## 📱 Responsive Design
 

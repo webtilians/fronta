@@ -31,6 +31,32 @@ const useMessages = () => {
     });
   }, []);
 
+  const addToolMessage = useCallback((toolName) => {
+    const toolMessage = {
+      id: Date.now() + Math.random(),
+      timestamp: new Date().toISOString(),
+      sender: 'tool',
+      text: `🛠️ Usando: ${toolName}`,
+      toolInfo: {
+        tool: toolName,
+        isActive: true
+      }
+    };
+    
+    setMessages((prev) => {
+      // Remover mensajes de herramientas anteriores
+      const filtered = prev.filter(msg => msg.sender !== 'tool');
+      const updated = [...filtered, toolMessage];
+      
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      } catch (error) {
+        console.error('Error al guardar mensajes:', error);
+      }
+      return updated;
+    });
+  }, []);
+
   const removeToolMessages = useCallback(() => {
     setMessages((prev) => {
       const filtered = prev.filter((msg) => msg.sender !== 'tool');
@@ -65,6 +91,7 @@ const useMessages = () => {
   return {
     messages,
     addMessage,
+    addToolMessage,
     removeToolMessages,
     clearMessages,
     getHistorial,

@@ -1,36 +1,32 @@
 export const TOOL_LABELS = {
+  // Herramientas del backend LangChain
   consultar_disponibilidad: 'Consultar disponibilidad',
-  crear_reserva: 'Crear reserva',
   listar_tipos_habitaciones: 'Listar tipos de habitaciones',
+  crear_reserva: 'Crear reserva',
   listar_reservas: 'Listar reservas',
+  
+  // Herramientas adicionales (legacy)
   cancelar_reserva: 'Cancelar reserva',
   modificar_reserva: 'Modificar reserva',
   consultar_servicios: 'Consultar servicios del hotel',
   generar_factura: 'Generar factura',
-  // Añadir herramientas específicas del backend
-  listar_tipos: 'Obtener catálogo de habitaciones',
+  
+  // Herramientas para simulación REST API
   analyze_intent: 'Analizando intención del usuario',
-  handle_specific_availability: 'Verificando disponibilidad específica',
-  handle_general_availability: 'Consultando disponibilidad general',
-  handle_reservation_request: 'Procesando solicitud de reserva',
-  handle_room_types_query: 'Consultando tipos de habitaciones',
-  handle_list_reservations: 'Listando reservas existentes',
+  processing_request: 'Procesando solicitud',
+  fetching_data: 'Obteniendo datos del servidor',
 };
 
 export const getToolLabel = (tool) => {
   return TOOL_LABELS[tool] || tool;
 };
 
-export const SOCKET_EVENTS = {
-  BOT_MESSAGE: 'bot-message',
-  TOOL_USED: 'tool-used',
-  BOT_TYPING: 'bot-typing',
-  USER_MESSAGE: 'user_message',
-  CONNECT: 'connect',
-  DISCONNECT: 'disconnect',
-  CONNECT_ERROR: 'connect_error',
-  RECONNECT: 'reconnect',
-  RECONNECT_ERROR: 'reconnect_error',
+export const API_ENDPOINTS = {
+  CHAT: '/chat',
+  HABITACIONES: '/habitaciones',
+  RESERVAS: '/reservas',
+  HEALTH: '/health',
+  TEST: '/test',
 };
 
 export const MESSAGE_TYPES = {
@@ -46,7 +42,7 @@ export const CONNECTION_STATUS = {
   CONNECTED: 'connected',
   DISCONNECTED: 'disconnected',
   ERROR: 'error',
-  RECONNECTING: 'reconnecting',
+  CHECKING: 'checking',
 };
 
 export const validateMessage = (text) => {

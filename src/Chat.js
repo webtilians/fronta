@@ -1,19 +1,23 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import useSocket from './hooks/useSocket';
+import useConnection from './hooks/useConnection';
 import useMessages from './hooks/useMessages';
+import useApi from './hooks/useApi';
 import MessageItem from './components/MessageItem';
 import ConnectionStatus from './components/ConnectionStatus';
 import TypingIndicator from './components/TypingIndicator';
 import ChatInput from './components/ChatInput';
-import { SOCKET_EVENTS, MESSAGE_TYPES, getToolLabel } from './utils/constants';
+import TestPanel from './components/TestPanel';
+import { MESSAGE_TYPES } from './utils/constants';
 import './Chat.css';
 
 function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [showTimestamps, setShowTimestamps] = useState(false);
+  const [showTestPanel, setShowTestPanel] = useState(false);
   const messagesEndRef = useRef(null);
-  const { isConnected, connectionError, emit, on, off } = useSocket();
-  const { messages, addMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
+  const { isConnected, connectionError } = useConnection();
+  const { messages, addMessage, addToolMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
+  const { sendMessage, isLoading, error: apiError } = useApi();
 
   // Scroll automático al nuevo mensaje
   const scrollToBottom = useCallback(() => {
@@ -27,97 +31,88 @@ function Chat() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Manejo de eventos del socket
-  useEffect(() => {
-    if (!isConnected) return;
-
-    // Mensaje del bot normal
-    const handleBotMessage = (text) => {
-      setIsTyping(false);
-      addMessage({ 
-        sender: MESSAGE_TYPES.BOT, 
-        text: typeof text === 'string' ? text : text.message || 'Mensaje sin contenido'
-      });
-    };
-
-    // Indicador de escritura
-    const handleBotTyping = (data) => {
-      setIsTyping(data?.typing ?? false);
-    };
-
-    // Evento para mostrar tool en uso - Mejorado para el nuevo backend
-    const handleToolUsed = (data) => {
-      if (data?.tool) {
-        // Crear mensaje más informativo sobre la herramienta
-        let toolMessage = `🛠️ Usando: ${getToolLabel(data.tool)}`;
-        
-        // Agregar información adicional si está disponible
-        if (data.input) {
-          const inputInfo = typeof data.input === 'object' ? 
-            Object.entries(data.input)
-              .filter(([key, value]) => value && value !== '')
-              .map(([key, value]) => `${key}: ${value}`)
-              .join(', ') : 
-            data.input;
-          
-          if (inputInfo) {
-            toolMessage += `\nProcesando: ${inputInfo}`;
-          }
-        }
-        
-        addMessage({
-          sender: MESSAGE_TYPES.TOOL,
-          text: toolMessage,
-          toolInfo: {
-            tool: data.tool,
-            input: data.input
-          }
-        });
-      } else {
-        // Borra el aviso del tool anterior
-        removeToolMessages();
-      }
-    };
-
-    // Registrar event listeners
-    on(SOCKET_EVENTS.BOT_MESSAGE, handleBotMessage);
-    on(SOCKET_EVENTS.BOT_TYPING, handleBotTyping);
-    on(SOCKET_EVENTS.TOOL_USED, handleToolUsed);
-
-    // Cleanup
-    return () => {
-      off(SOCKET_EVENTS.BOT_MESSAGE, handleBotMessage);
-      off(SOCKET_EVENTS.BOT_TYPING, handleBotTyping);
-      off(SOCKET_EVENTS.TOOL_USED, handleToolUsed);
-    };
-  }, [isConnected, on, off, addMessage, removeToolMessages]);
+  // Simular el uso de herramientas basado en el tipo de pregunta
+  const simulateToolUsage = useCallback((userMessage) => {
+    const message = userMessage.toLowerCase();
+    
+    if (message.includes('disponibilidad') || message.includes('disponible')) {
+      addToolMessage('Consultar disponibilidad');
+      return 'consultar_disponibilidad';
+    } else if (message.includes('reserva') || message.includes('reservar')) {
+      addToolMessage('Crear reserva');
+      return 'crear_reserva';
+    } else if (message.includes('habitaciones') || message.includes('tipos')) {
+      addToolMessage('Listar tipos de habitaciones');
+      return 'listar_tipos_habitaciones';
+    } else if (message.includes('listar reservas') || message.includes('ver reservas')) {
+      addToolMessage('Listar reservas');
+      return 'listar_reservas';
+    } else {
+      addToolMessage('Analizando intención del usuario');
+      return 'analyze_intent';
+    }
+  }, [addToolMessage]);
 
   // Enviar mensaje
-  const handleSendMessage = useCallback((text) => {
-    if (!isConnected || !text.trim()) return;
+  const handleSendMessage = useCallback(async (text) => {
+    if (!isConnected || !text.trim() || isLoading) return;
 
     try {
       const historial = getHistorial();
       
+      // Agregar mensaje del usuario
       addMessage({ 
         sender: MESSAGE_TYPES.USER, 
         text: text.trim() 
       });
 
-      emit(SOCKET_EVENTS.USER_MESSAGE, { 
-        mensaje: text.trim(), 
-        historial 
-      });
-
+      // Mostrar indicador de escritura
       setIsTyping(true);
+
+      // Simular uso de herramienta
+      simulateToolUsage(text);
+      
+      // Pequeña pausa para mostrar la herramienta
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Enviar mensaje al backend
+      const response = await sendMessage(text.trim(), historial);
+      
+      // Limpiar herramientas
+      removeToolMessages();
+      
+      // Agregar respuesta del bot
+      if (response && response.response) {
+        addMessage({
+          sender: MESSAGE_TYPES.BOT,
+          text: response.response
+        });
+      } else if (response && response.mensaje) {
+        addMessage({
+          sender: MESSAGE_TYPES.BOT,
+          text: response.mensaje
+        });
+      } else {
+        addMessage({
+          sender: MESSAGE_TYPES.BOT,
+          text: 'Respuesta recibida del servidor'
+        });
+      }
+
     } catch (error) {
       console.error('Error al enviar mensaje:', error);
+      
+      // Limpiar herramientas en caso de error
+      removeToolMessages();
+      
       addMessage({
         sender: MESSAGE_TYPES.ERROR,
-        text: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+        text: `Error: ${error.message}. Por favor, inténtalo de nuevo.`
       });
+    } finally {
+      setIsTyping(false);
     }
-  }, [isConnected, emit, addMessage, getHistorial]);
+  }, [isConnected, isLoading, addMessage, removeToolMessages, getHistorial, sendMessage, simulateToolUsage]);
 
   // Limpiar chat
   const handleClearChat = useCallback(() => {
@@ -126,6 +121,16 @@ function Chat() {
       setIsTyping(false);
     }
   }, [clearMessages]);
+
+  // Mostrar error de API si existe
+  useEffect(() => {
+    if (apiError) {
+      addMessage({
+        sender: MESSAGE_TYPES.ERROR,
+        text: `Error de API: ${apiError}`
+      });
+    }
+  }, [apiError, addMessage]);
 
   return (
     <div className="chat-container" role="main" aria-label="Chat del asistente hotel">
@@ -142,6 +147,14 @@ function Chat() {
             title={showTimestamps ? 'Ocultar horas' : 'Mostrar horas'}
           >
             🕒
+          </button>
+          <button
+            className="test-panel-button"
+            onClick={() => setShowTestPanel(true)}
+            aria-label="Abrir panel de pruebas"
+            title="Panel de pruebas API"
+          >
+            🧪
           </button>
           <button
             className="clear-chat"
@@ -178,14 +191,23 @@ function Chat() {
           />
         ))}
         
-        <TypingIndicator isVisible={isTyping} />
+        <TypingIndicator isVisible={isTyping || isLoading} />
         <div ref={messagesEndRef} />
       </div>
 
       <ChatInput
         onSendMessage={handleSendMessage}
-        disabled={!isConnected}
-        placeholder={isConnected ? "Escribe tu mensaje..." : "Conectando..."}
+        disabled={!isConnected || isLoading}
+        placeholder={
+          !isConnected ? "Sin conexión..." : 
+          isLoading ? "Enviando..." : 
+          "Escribe tu mensaje..."
+        }
+      />
+      
+      <TestPanel 
+        isOpen={showTestPanel} 
+        onClose={() => setShowTestPanel(false)} 
       />
     </div>
   );
