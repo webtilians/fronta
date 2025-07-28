@@ -60,9 +60,9 @@ const useApi = () => {
       sessionId = generateSessionId();
     }
 
-    // Formato exacto que espera el backend FastAPI
+    // Formato exacto que espera el backend FastAPI, with English instruction
     const payload = {
-      message: mensaje,
+      message: `Please respond in English. ${mensaje}`,
       session_id: sessionId
     };
 

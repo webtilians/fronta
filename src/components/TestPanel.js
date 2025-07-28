@@ -40,27 +40,27 @@ const TestPanel = ({ isOpen, onClose }) => {
   const tests = [
     {
       name: 'health',
-      label: 'Estado del servidor',
+      label: 'Server status',
       fn: () => getHealth()
     },
     {
       name: 'habitaciones',
-      label: 'Listar habitaciones',
+      label: 'List rooms',
       fn: () => getHabitaciones()
     },
     {
       name: 'reservas',
-      label: 'Listar reservas',
+      label: 'List reservations',
       fn: () => getReservas()
     },
     {
       name: 'chat',
-      label: 'Enviar mensaje de prueba',
-      fn: () => sendMessage('Hola, ¿qué tipos de habitaciones tienen disponibles?', [])
+      label: 'Send test message',
+      fn: () => sendMessage('What room types are available?', [])
     },
     {
       name: 'chatAlternativo',
-      label: 'Chat (directo al endpoint)',
+      label: 'Chat (direct endpoint)',
       fn: async () => {
         const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
         const sessionId = localStorage.getItem('session_id') || 'test_session';
@@ -71,7 +71,7 @@ const TestPanel = ({ isOpen, onClose }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            message: '¿Hay habitaciones disponibles para mañana?',
+            message: 'Please respond in English. Are there rooms available for tomorrow?',
             session_id: sessionId
           })
         });
@@ -89,7 +89,7 @@ const TestPanel = ({ isOpen, onClose }) => {
   const runAllTests = async () => {
     for (const test of tests) {
       await runTest(test.name, test.fn);
-      // Pequeña pausa entre tests
+      // Small pause between tests
       await new Promise(resolve => setTimeout(resolve, 500));
     }
   };
@@ -100,7 +100,7 @@ const TestPanel = ({ isOpen, onClose }) => {
     <div className="test-panel-overlay">
       <div className="test-panel">
         <div className="test-panel-header">
-          <h3>🧪 Panel de Pruebas API</h3>
+          <h3>🧪 API Test Panel</h3>
           <button onClick={onClose} className="close-button">✕</button>
         </div>
         
@@ -111,7 +111,7 @@ const TestPanel = ({ isOpen, onClose }) => {
               disabled={isRunning}
               className="run-all-button"
             >
-              {isRunning ? '⏳ Ejecutando...' : '🚀 Ejecutar Todas'}
+              {isRunning ? '⏳ Running...' : '🚀 Run All Tests'}
             </button>
           </div>
 
@@ -125,7 +125,7 @@ const TestPanel = ({ isOpen, onClose }) => {
                     disabled={isRunning}
                     className="test-button"
                   >
-                    🧪 Probar
+                    🧪 Test
                   </button>
                 </div>
                 

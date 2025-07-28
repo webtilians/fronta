@@ -6,7 +6,7 @@ const ConnectionStatus = ({ isConnected, connectionError }) => {
     return (
       <div className="connection-status error" role="alert" aria-live="polite">
         <span className="status-icon">🚫</span>
-        <span className="status-text">Error de conexión</span>
+        <span className="status-text">Connection error</span>
         <span className="status-detail">{connectionError}</span>
       </div>
     );
@@ -16,7 +16,7 @@ const ConnectionStatus = ({ isConnected, connectionError }) => {
     return (
       <div className="connection-status disconnected" role="status" aria-live="polite">
         <span className="status-icon">🔄</span>
-        <span className="status-text">Conectando...</span>
+        <span className="status-text">Connecting...</span>
       </div>
     );
   }
@@ -24,7 +24,7 @@ const ConnectionStatus = ({ isConnected, connectionError }) => {
   return (
     <div className="connection-status connected" role="status" aria-live="polite">
       <span className="status-icon">✅</span>
-      <span className="status-text">Conectado</span>
+      <span className="status-text">Connected</span>
     </div>
   );
 };

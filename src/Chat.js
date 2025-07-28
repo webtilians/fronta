@@ -19,7 +19,7 @@ function Chat() {
   const { messages, addMessage, addToolMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
   const { sendMessage, isLoading, error: apiError } = useApi();
 
-  // Scroll automático al nuevo mensaje
+  // Auto scroll to new message
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ 
       behavior: 'smooth',
@@ -31,57 +31,57 @@ function Chat() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Simular el uso de herramientas basado en el tipo de pregunta
+  // Simulate tool usage based on question type
   const simulateToolUsage = useCallback((userMessage) => {
     const message = userMessage.toLowerCase();
     
-    if (message.includes('disponibilidad') || message.includes('disponible')) {
-      addToolMessage('Consultar disponibilidad');
+    if (message.includes('availability') || message.includes('available')) {
+      addToolMessage('Check availability');
       return 'consultar_disponibilidad';
-    } else if (message.includes('reserva') || message.includes('reservar')) {
-      addToolMessage('Crear reserva');
+    } else if (message.includes('reservation') || message.includes('reserve') || message.includes('book')) {
+      addToolMessage('Create reservation');
       return 'crear_reserva';
-    } else if (message.includes('habitaciones') || message.includes('tipos')) {
-      addToolMessage('Listar tipos de habitaciones');
+    } else if (message.includes('rooms') || message.includes('types')) {
+      addToolMessage('List room types');
       return 'listar_tipos_habitaciones';
-    } else if (message.includes('listar reservas') || message.includes('ver reservas')) {
-      addToolMessage('Listar reservas');
+    } else if (message.includes('list reservations') || message.includes('view reservations')) {
+      addToolMessage('List reservations');
       return 'listar_reservas';
     } else {
-      addToolMessage('Analizando intención del usuario');
+      addToolMessage('Analyzing user intent');
       return 'analyze_intent';
     }
   }, [addToolMessage]);
 
-  // Enviar mensaje
+  // Send message
   const handleSendMessage = useCallback(async (text) => {
     if (!isConnected || !text.trim() || isLoading) return;
 
     try {
       const historial = getHistorial();
       
-      // Agregar mensaje del usuario
+      // Add user message
       addMessage({ 
         sender: MESSAGE_TYPES.USER, 
         text: text.trim() 
       });
 
-      // Mostrar indicador de escritura
+      // Show typing indicator
       setIsTyping(true);
 
-      // Simular uso de herramienta
+      // Simulate tool usage
       simulateToolUsage(text);
       
-      // Pequeña pausa para mostrar la herramienta
+      // Small pause to show the tool
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Enviar mensaje al backend
+      // Send message to backend
       const response = await sendMessage(text.trim(), historial);
       
-      // Limpiar herramientas
+      // Clear tools
       removeToolMessages();
       
-      // Agregar respuesta del bot
+      // Add bot response
       if (response && response.response) {
         addMessage({
           sender: MESSAGE_TYPES.BOT,
@@ -95,45 +95,45 @@ function Chat() {
       } else {
         addMessage({
           sender: MESSAGE_TYPES.BOT,
-          text: 'Respuesta recibida del servidor'
+          text: 'Response received from server'
         });
       }
 
     } catch (error) {
-      console.error('Error al enviar mensaje:', error);
+      console.error('Error sending message:', error);
       
-      // Limpiar herramientas en caso de error
+      // Clear tools on error
       removeToolMessages();
       
       addMessage({
         sender: MESSAGE_TYPES.ERROR,
-        text: `Error: ${error.message}. Por favor, inténtalo de nuevo.`
+        text: `Error: ${error.message}. Please try again.`
       });
     } finally {
       setIsTyping(false);
     }
   }, [isConnected, isLoading, addMessage, removeToolMessages, getHistorial, sendMessage, simulateToolUsage]);
 
-  // Limpiar chat
+  // Clear chat
   const handleClearChat = useCallback(() => {
-    if (window.confirm('¿Estás seguro de que deseas limpiar el chat?')) {
+    if (window.confirm('Are you sure you want to clear the chat?')) {
       clearMessages();
       setIsTyping(false);
     }
   }, [clearMessages]);
 
-  // Mostrar error de API si existe
+  // Show API error if exists
   useEffect(() => {
     if (apiError) {
       addMessage({
         sender: MESSAGE_TYPES.ERROR,
-        text: `Error de API: ${apiError}`
+        text: `API Error: ${apiError}`
       });
     }
   }, [apiError, addMessage]);
 
   return (
-    <div className="chat-container" role="main" aria-label="Chat del asistente hotel">
+    <div className="chat-container" role="main" aria-label="Hotel assistant chat">
       <div className="chat-header">
         <ConnectionStatus 
           isConnected={isConnected} 
@@ -143,24 +143,24 @@ function Chat() {
           <button
             className="toggle-timestamps"
             onClick={() => setShowTimestamps(!showTimestamps)}
-            aria-label="Mostrar/ocultar marcas de tiempo"
-            title={showTimestamps ? 'Ocultar horas' : 'Mostrar horas'}
+            aria-label="Show/hide timestamps"
+            title={showTimestamps ? 'Hide times' : 'Show times'}
           >
             🕒
           </button>
           <button
             className="test-panel-button"
             onClick={() => setShowTestPanel(true)}
-            aria-label="Abrir panel de pruebas"
-            title="Panel de pruebas API"
+            aria-label="Open test panel"
+            title="API test panel"
           >
             🧪
           </button>
           <button
             className="clear-chat"
             onClick={handleClearChat}
-            aria-label="Limpiar chat"
-            title="Limpiar conversación"
+            aria-label="Clear chat"
+            title="Clear conversation"
           >
             🗑️
           </button>
@@ -171,14 +171,14 @@ function Chat() {
         className="chat-messages" 
         role="log" 
         aria-live="polite" 
-        aria-label="Mensajes del chat"
+        aria-label="Chat messages"
       >
         {messages.length === 0 && (
           <div className="welcome-message" role="article">
             <div className="welcome-icon">👋</div>
             <div className="welcome-text">
-              ¡Hola! Soy AselvIA, tu asistente del Hotel "El Amanecer". 
-              ¿En qué puedo ayudarte hoy?
+              Hello! I'm AselvIA, your Hotel "El Amanecer" assistant. 
+              How can I help you today?
             </div>
           </div>
         )}
@@ -199,9 +199,9 @@ function Chat() {
         onSendMessage={handleSendMessage}
         disabled={!isConnected || isLoading}
         placeholder={
-          !isConnected ? "Sin conexión..." : 
-          isLoading ? "Enviando..." : 
-          "Escribe tu mensaje..."
+          !isConnected ? "No connection..." : 
+          isLoading ? "Sending..." : 
+          "Type your message..."
         }
       />
       

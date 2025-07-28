@@ -1,20 +1,20 @@
 export const TOOL_LABELS = {
-  // Herramientas del backend LangChain
-  consultar_disponibilidad: 'Consultar disponibilidad',
-  listar_tipos_habitaciones: 'Listar tipos de habitaciones',
-  crear_reserva: 'Crear reserva',
-  listar_reservas: 'Listar reservas',
+  // Backend LangChain tools
+  consultar_disponibilidad: 'Check availability',
+  listar_tipos_habitaciones: 'List room types',
+  crear_reserva: 'Create reservation',
+  listar_reservas: 'List reservations',
   
-  // Herramientas adicionales (legacy)
-  cancelar_reserva: 'Cancelar reserva',
-  modificar_reserva: 'Modificar reserva',
-  consultar_servicios: 'Consultar servicios del hotel',
-  generar_factura: 'Generar factura',
+  // Additional tools (legacy)
+  cancelar_reserva: 'Cancel reservation',
+  modificar_reserva: 'Modify reservation',
+  consultar_servicios: 'Check hotel services',
+  generar_factura: 'Generate invoice',
   
-  // Herramientas para simulación REST API
-  analyze_intent: 'Analizando intención del usuario',
-  processing_request: 'Procesando solicitud',
-  fetching_data: 'Obteniendo datos del servidor',
+  // REST API simulation tools
+  analyze_intent: 'Analyzing user intent',
+  processing_request: 'Processing request',
+  fetching_data: 'Fetching data from server',
 };
 
 export const getToolLabel = (tool) => {
