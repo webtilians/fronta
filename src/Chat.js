@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import useConnection from './hooks/useConnection';
 import useMessages from './hooks/useMessages';
 import useApi from './hooks/useApi';
+import useVoice from './hooks/useVoice';
 import MessageItem from './components/MessageItem';
 import ConnectionStatus from './components/ConnectionStatus';
 import TypingIndicator from './components/TypingIndicator';
 import ChatInput from './components/ChatInput';
 import TestPanel from './components/TestPanel';
+import VoiceStatus from './components/VoiceStatus';
 import { MESSAGE_TYPES } from './utils/constants';
 import './Chat.css';
 
@@ -18,6 +20,7 @@ function Chat() {
   const { isConnected, connectionError } = useConnection();
   const { messages, addMessage, addToolMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
   const { sendMessage, isLoading, error: apiError } = useApi();
+  const { speak, isSpeaking, isListening, transcript, voiceSupported } = useVoice();
 
   // Auto scroll to new message
   const scrollToBottom = useCallback(() => {
@@ -83,20 +86,32 @@ function Chat() {
       
       // Add bot response
       if (response && response.response) {
-        addMessage({
+        const botMessage = {
           sender: MESSAGE_TYPES.BOT,
           text: response.response
-        });
+        };
+        addMessage(botMessage);
+        
+        // Speak the bot response with enhanced naturalness
+        setTimeout(() => speak(response.response), 300);
       } else if (response && response.mensaje) {
-        addMessage({
+        const botMessage = {
           sender: MESSAGE_TYPES.BOT,
           text: response.mensaje
-        });
+        };
+        addMessage(botMessage);
+        
+        // Speak the bot response with enhanced naturalness
+        setTimeout(() => speak(response.mensaje), 300);
       } else {
+        const fallbackMessage = 'I received your message. How can I help you further?';
         addMessage({
           sender: MESSAGE_TYPES.BOT,
-          text: 'Response received from server'
+          text: fallbackMessage
         });
+        
+        // Speak the fallback message
+        setTimeout(() => speak(fallbackMessage), 300);
       }
 
     } catch (error) {
@@ -112,7 +127,7 @@ function Chat() {
     } finally {
       setIsTyping(false);
     }
-  }, [isConnected, isLoading, addMessage, removeToolMessages, getHistorial, sendMessage, simulateToolUsage]);
+  }, [isConnected, isLoading, addMessage, removeToolMessages, getHistorial, sendMessage, simulateToolUsage, speak]);
 
   // Clear chat
   const handleClearChat = useCallback(() => {
@@ -134,6 +149,13 @@ function Chat() {
 
   return (
     <div className="chat-container" role="main" aria-label="Hotel assistant chat">
+      <VoiceStatus 
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+        transcript={transcript}
+        voiceSupported={voiceSupported}
+      />
+      
       <div className="chat-header">
         <ConnectionStatus 
           isConnected={isConnected} 
@@ -178,7 +200,14 @@ function Chat() {
             <div className="welcome-icon">👋</div>
             <div className="welcome-text">
               Hello! I'm AselvIA, your Hotel "El Amanecer" assistant. 
-              How can I help you today?
+              {voiceSupported ? (
+                <span>
+                  <br />You can type your message or use voice commands by clicking the microphone button. 
+                  How can I help you today?
+                </span>
+              ) : (
+                <span>How can I help you today?</span>
+              )}
             </div>
           </div>
         )}

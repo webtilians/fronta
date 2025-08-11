@@ -88,13 +88,14 @@
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 20px;
+  margin-bottom: 0px; /* Remove margin for fixed input */
   display: flex;
   flex-direction: column;
   gap: 16px;
   scrollbar-width: thin;
   scrollbar-color: rgba(177, 205, 250, 0.3) transparent;
   padding: 16px;
+  padding-bottom: 100px; /* Space for fixed input */
   min-height: 400px;
 }
 
@@ -301,36 +302,61 @@
   }
 }
 
+/* Chat Input Container - Fixed positioning for mobile */
+.chat-input-container {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #181d29;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
 .chat-input-area {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  margin-top: 8px;
-  align-items: flex-end;
+  width: 100%;
+  max-width: 100%;
 }
 
 .input-wrapper {
   flex: 1;
   position: relative;
+  width: 100%;
 }
 
 .input-wrapper input[type="text"] {
   width: 100%;
-  padding: 14px 16px 14px 16px;
+  padding: 14px 16px;
   border-radius: 12px;
   border: 2px solid rgba(255, 255, 255, 0.1);
-  background: #232941;
-  color: #f5f6fa;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
   font-size: 1rem;
-  outline: none;
-  transition: all 0.3s ease;
+  line-height: 1.4;
   resize: none;
+  transition: all 0.3s ease;
   box-sizing: border-box;
+  font-family: inherit;
+  outline: none;
 }
 
 .input-wrapper input[type="text"]:focus {
-  background: #2a3441;
-  border-color: rgba(134, 76, 248, 0.5);
-  box-shadow: 0 0 0 3px rgba(134, 76, 248, 0.1);
+  border-color: #0bc6ea;
+  background: rgba(11, 198, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(11, 198, 234, 0.1);
+}
+
+.input-wrapper input[type="text"].listening {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 .input-wrapper input[type="text"]:disabled {
@@ -338,58 +364,178 @@
   cursor: not-allowed;
 }
 
+.input-wrapper input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .char-counter {
   position: absolute;
   bottom: -20px;
-  right: 8px;
+  right: 0;
   font-size: 0.75rem;
-  color: #64748b;
-  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
 }
 
-.chat-input-area button {
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #864cf8, #12c6fb);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+.input-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.send-button {
+  background: linear-gradient(135deg, #8554e5 0%, #0bc6ea 100%);
   border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(18, 198, 251, 0.25);
+  padding: 12px 20px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 100px;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(133, 84, 229, 0.3);
 }
 
-.chat-input-area button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+.send-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(18, 198, 251, 0.35);
+  box-shadow: 0 4px 16px rgba(133, 84, 229, 0.4);
 }
 
-.chat-input-area button:active:not(:disabled) {
+.send-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.chat-input-area button:disabled {
+.send-button:disabled,
+.send-button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.chat-input-area button.disabled {
-  background: #4a5568;
+.conversation-button {
+  background: linear-gradient(135deg, #8554e5 0%, #0bc6ea 100%);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(133, 84, 229, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.button-icon {
-  font-size: 0.9rem;
+.conversation-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(133, 84, 229, 0.4);
 }
 
+.conversation-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
+}
+
+.conversation-button.speaking {
+  animation: pulse-conversation 1.5s infinite;
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+}
+
+.conversation-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes pulse-conversation {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(133, 84, 229, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(133, 84, 229, 0.3);
+  }
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .chat-input-container {
+    padding: 12px 8px;
+    min-height: 70px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .input-wrapper input[type="text"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 14px;
+  }
+  
+  .send-button {
+    padding: 10px 16px;
+    min-width: 80px;
+    font-size: 0.9rem;
+  }
+  
+  .char-counter {
+    bottom: -18px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-input-container {
+    padding: 10px 6px;
+    min-height: 65px;
+  }
+  
+  .input-controls {
+    gap: 8px;
+  }
+  
+  .input-wrapper input[type="text"] {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  
+  .send-button {
+    padding: 8px 12px;
+    min-width: 70px;
+    font-size: 0.85rem;
+  }
+  
+  .button-text {
+    display: none;
+  }
+  
+  .char-counter {
+    bottom: -16px;
+    font-size: 0.65rem;
+  }
+}
+
+/* Message content styles */
 .message-content .emoji-bullet {
   font-size: 1.1rem;
   margin-right: 8px;
@@ -458,6 +604,7 @@
     padding: 8px;
     gap: 12px;
     min-height: unset;
+    padding-bottom: 80px; /* Space for mobile input */
   }
   
   .message {
