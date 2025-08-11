@@ -3,6 +3,7 @@ import useConnection from './hooks/useConnection';
 import useMessages from './hooks/useMessages';
 import useApi from './hooks/useApi';
 import useVoice from './hooks/useVoice';
+import useIOSViewport from './hooks/useIOSViewport';
 import MessageItem from './components/MessageItem';
 import ConnectionStatus from './components/ConnectionStatus';
 import TypingIndicator from './components/TypingIndicator';
@@ -21,6 +22,9 @@ function Chat() {
   const { messages, addMessage, addToolMessage, removeToolMessages, clearMessages, getHistorial } = useMessages();
   const { sendMessage, isLoading, error: apiError } = useApi();
   const { speak, isSpeaking, isListening, transcript, voiceSupported } = useVoice();
+  
+  // iOS viewport handling
+  useIOSViewport();
 
   // Auto scroll to new message
   const scrollToBottom = useCallback(() => {
@@ -232,6 +236,13 @@ function Chat() {
           isLoading ? "Sending..." : 
           "Type your message..."
         }
+      />
+      
+      <VoiceStatus 
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+        transcript={transcript}
+        voiceSupported={voiceSupported}
       />
       
       <TestPanel 
